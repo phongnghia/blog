@@ -10,8 +10,6 @@ import java.util.UUID;
 
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(indexName = "user")
 public class UserESEntity extends BaseUserEntity {
 

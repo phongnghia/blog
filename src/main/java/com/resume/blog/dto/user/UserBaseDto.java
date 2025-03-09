@@ -23,11 +23,4 @@ public abstract class UserBaseDto {
 
     protected String intro;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 }

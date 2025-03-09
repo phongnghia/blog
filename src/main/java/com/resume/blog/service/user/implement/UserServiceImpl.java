@@ -1,5 +1,6 @@
 package com.resume.blog.service.user.implement;
 
+import com.resume.blog.entity.es.UserESEntity;
 import com.resume.blog.mapper.UserMapper;
 import com.resume.blog.dto.user.UserDto;
 import com.resume.blog.entity.jpa.UserEntity;
@@ -42,8 +43,10 @@ public class UserServiceImpl implements IUserService {
 
         userDto.setId(id);
         UserEntity userEntity = m_userMapper.userToEntity(userDto);
+        UserESEntity userESEntity = m_userMapper.userDtoToEntity(userDto);
 
         m_userRepository.save(userEntity);
+        m_userESRepository.save(userESEntity);
         return userDto;
     }
 

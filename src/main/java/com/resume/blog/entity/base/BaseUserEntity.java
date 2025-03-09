@@ -9,10 +9,7 @@ import java.util.UUID;
 
 @Data
 @MappedSuperclass
-public abstract class BaseUserEntity {
-
-    @Id
-    protected UUID id;
+public abstract class BaseUserEntity extends BaseEntity {
 
     @Column
     protected String username;

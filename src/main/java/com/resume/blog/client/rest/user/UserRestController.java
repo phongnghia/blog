@@ -1,7 +1,7 @@
 package com.resume.blog.client.rest.user;
 
 import ch.qos.logback.core.util.StringUtil;
-import com.resume.blog.dto.user.ApiResponse;
+import com.resume.blog.utils.ApiResponse;
 import com.resume.blog.dto.user.UserDto;
 import com.resume.blog.dto.user.UserQueryRequest;
 import com.resume.blog.mapper.UserMapper;

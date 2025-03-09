@@ -1,4 +1,4 @@
-package com.resume.blog.dto.user;
+package com.resume.blog.utils;
 
 public class ApiResponse<T> {
 

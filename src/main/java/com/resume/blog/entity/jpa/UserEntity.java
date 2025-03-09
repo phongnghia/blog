@@ -1,13 +1,12 @@
 package com.resume.blog.entity.jpa;
 
 import com.resume.blog.entity.base.BaseUserEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,14 +16,14 @@ import java.util.UUID;
 @Table( name = "user")
 public class UserEntity extends BaseUserEntity {
 
-    @Column(name = "id", nullable = false)
-    private UUID id;
-
     @Column ( nullable = false )
     private String passwordHash;
 
     @Column ( nullable = false )
-    protected String username;
+    private String username;
+
+    @OneToMany ( mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PostEntity> posts;
 
     public UUID getId(){
         return id;

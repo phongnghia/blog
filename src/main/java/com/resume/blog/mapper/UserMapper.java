@@ -23,4 +23,6 @@ public interface UserMapper {
 
     UserESDto userESToDto(UserESEntity userESEntity);
 
+    UserESEntity userDtoToEntity(UserDto userDto);
+
 }
