@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping ( value = "/rest/user" )
 public class UserRestController {
@@ -44,19 +46,33 @@ public class UserRestController {
             return ResponseEntity.status(400).body(message);
         }
 
-        if (!isUserExists(userQueryRequest.getUsername())) {
+        if (!isUserExists(userQueryRequest, null)) {
             UserDto userDto = m_userService.addUser(m_userMapper.userRequestQueryToDto(userQueryRequest));
             message = String.format("Added successful");
             return ResponseEntity.ok().body(new ApiResponse<>(userDto, message));
         } else {
-            message = String.format("The username \"%s\" already exists", userQueryRequest.getUsername());
-            return ResponseEntity.status(400).body(message);
+            message = String.format("The username %s already exists", userQueryRequest.getUsername());
+            return ResponseEntity.status(400).body(new ApiResponse<>(null, message));
         }
     }
 
-    public Boolean isUserExists(String username) {
-        UserDto userDto = m_userService.findUserByUsername(username);
-        return userDto != null;
+    @GetMapping ( value = "get/{id}" )
+    public ResponseEntity<?> getUserById(@PathVariable UUID id) {
+        UserDto userDto = m_userService.findUserById(id);
+        if (userDto == null) {
+            return ResponseEntity.ok().body(new ApiResponse<>(null, String.format("No user found with ID %s", id.toString())));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(userDto, String.format("Success! User with ID %s has been found", id.toString())));
+    }
+
+    public Boolean isUserExists(UserQueryRequest userQueryRequest, UUID id) {
+        if (!StringUtil.isNullOrEmpty(userQueryRequest.getUsername())) {
+            return m_userService.findUserByUsername(userQueryRequest.getUsername()) != null;
+        }
+        if (id != null) {
+            return m_userService.findUserById(id) != null;
+        }
+        return false;
     }
 
 }

@@ -1,11 +1,15 @@
 package com.resume.blog.entity.jpa;
 
 import com.resume.blog.entity.base.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Entity

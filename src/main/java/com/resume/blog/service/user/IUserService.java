@@ -13,6 +13,6 @@ public interface IUserService {
 
     UserDto findUserByUsername(String username);
 
-    UserDto findUserById(UUID uuid);
+    UserDto findUserById(UUID id);
 
 }

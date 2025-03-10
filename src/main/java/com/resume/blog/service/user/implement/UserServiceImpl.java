@@ -57,8 +57,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDto findUserById(UUID uuid) {
-        return null;
+    public UserDto findUserById(UUID id) {
+        UserDto userDto = m_userMapper.userToDto(m_userRepository.findUserById(id));
+        return userDto;
     }
 
 }
