@@ -1,6 +1,8 @@
 server:
   port: 8081
 
+version: "@version@"
+
 spring:
   application:
     name: blog
@@ -22,3 +24,8 @@ spring:
       ddl-auto: "update"
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
