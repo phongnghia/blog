@@ -9,9 +9,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper( componentModel = "spring" )
-public interface UserMapper {
+public interface BlogMapper {
 
-    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    BlogMapper INSTANCE = Mappers.getMapper(BlogMapper.class);
 
     UserEntity userToEntity(UserDto userDto);
 
@@ -23,6 +23,6 @@ public interface UserMapper {
 
     UserESDto userESToDto(UserESEntity userESEntity);
 
-    UserESEntity userDtoToEntity(UserDto userDto);
+    UserESEntity userDtoToESEntity(UserDto userDto);
 
 }

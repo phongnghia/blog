@@ -15,4 +15,6 @@ public interface IUserService {
 
     UserDto findUserById(UUID id);
 
+    UserDto updateUser(UUID id, UserDto userDto);
+
 }

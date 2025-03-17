@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface UserESRepository extends ElasticsearchRepository<UserESEntity, UUID> {
 
+    UserESEntity findUserById(UUID id);
+
 }

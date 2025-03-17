@@ -13,4 +13,12 @@ public class UserDto extends UserBaseDto{
 
     private List<PostDto> posts;
 
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
 }
