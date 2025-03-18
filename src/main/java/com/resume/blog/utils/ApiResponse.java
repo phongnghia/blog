@@ -11,19 +11,19 @@ public class ApiResponse<T> {
         this.m_message = message;
     }
 
-    public String getM_message() {
+    public String getMessage() {
         return m_message;
     }
 
-    public void setM_message(String m_message) {
+    public void setMessage(String m_message) {
         this.m_message = m_message;
     }
 
-    public T getM_data() {
+    public T getData() {
         return m_data;
     }
 
-    public void setM_data(T m_data) {
+    public void setData(T m_data) {
         this.m_data = m_data;
     }
 

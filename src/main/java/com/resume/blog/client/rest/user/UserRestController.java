@@ -6,6 +6,7 @@ import com.resume.blog.dto.user.UserDto;
 import com.resume.blog.dto.user.UserQueryRequest;
 import com.resume.blog.mapper.BlogMapper;
 import com.resume.blog.service.user.IUserService;
+import com.resume.blog.utils.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,18 +43,22 @@ public class UserRestController {
     public ResponseEntity<?> addUser(@RequestBody UserQueryRequest userQueryRequest){
         String message = null;
 
-        if (StringUtil.isNullOrEmpty(userQueryRequest.getUsername()) || StringUtil.isNullOrEmpty(userQueryRequest.getPasswordHash())) {
-            message = "Username or password cannot be empty. These fields are required";
-            return ResponseEntity.status(400).body(message);
-        }
+        try {
+            if (StringUtil.isNullOrEmpty(userQueryRequest.getUsername()) || StringUtil.isNullOrEmpty(userQueryRequest.getPasswordHash())) {
+                message = "Username or password cannot be empty. These fields are required";
+                return ResponseEntity.status(400).body(message);
+            }
 
-        if (!isUserExists(userQueryRequest, null)) {
-            UserDto userDto = m_userService.addUser(m_blogMapper.userRequestQueryToDto(userQueryRequest));
-            message = "Added successful";
-            return ResponseEntity.ok().body(new ApiResponse<>(userDto, message));
-        } else {
-            message = String.format("The username %s already exists", userQueryRequest.getUsername());
-            return ResponseEntity.status(400).body(new ApiResponse<>(null, message));
+            if (!isUserExists(userQueryRequest, null)) {
+                UserDto userDto = m_userService.addUser(m_blogMapper.userRequestQueryToDto(userQueryRequest));
+                message = "Added successful";
+                return ResponseEntity.ok().body(new ApiResponse<>(userDto, message));
+            } else {
+                message = String.format("The username %s already exists", userQueryRequest.getUsername());
+                return ResponseEntity.status(400).body(new ApiResponse<>(null, message));
+            }
+        } catch (CustomException ex) {
+            return ResponseEntity.status(500).body(ex);
         }
     }
 
@@ -76,7 +81,20 @@ public class UserRestController {
             UserDto userDto = m_userService.updateUser(id, m_blogMapper.userRequestQueryToDto(userQueryRequest));
             return ResponseEntity.ok().body(new ApiResponse<>(userDto, String.format("Success! The user with ID %s has been successfully updated", id.toString())));
         } catch (EntityNotFoundException ex) {
-            return ResponseEntity.status(500).body(new ApiResponse<>(null, ex.toString()));
+            return ResponseEntity.status(500).body(ex);
+        }
+    }
+
+    @DeleteMapping ( value = "delete/{id}" )
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        try {
+            if (!isUserExists(null, id)) {
+                return ResponseEntity.status(404).body(new ApiResponse<>(null, String.format("No user found with ID %s", id.toString())));
+            }
+            m_userService.deleteUserById(id);
+            return ResponseEntity.ok().body(new ApiResponse<>(null, String.format("User deletion successful for the specified ID: %s", id.toString())));
+        } catch (CustomException ex) {
+            return ResponseEntity.status(500).body(ex);
         }
     }
 

@@ -8,9 +8,11 @@ import com.resume.blog.mapper.UpdateUserMapper;
 import com.resume.blog.repository.es.UserESRepository;
 import com.resume.blog.repository.jpa.UserRepository;
 import com.resume.blog.service.user.IUserService;
+import com.resume.blog.utils.CustomException;
 import com.resume.blog.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,15 +46,19 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional
     public UserDto addUser(UserDto userDto) {
-        UUID id = Utils.generateRandomId();
+        try {
+            UUID id = Utils.generateRandomId();
 
-        userDto.setId(id);
-        UserEntity userEntity = m_blogMapper.userToEntity(userDto);
-        UserESEntity userESEntity = m_blogMapper.userDtoToESEntity(userDto);
+            userDto.setId(id);
+            UserEntity userEntity = m_blogMapper.userToEntity(userDto);
+            UserESEntity userESEntity = m_blogMapper.userDtoToESEntity(userDto);
 
-        m_userRepository.save(userEntity);
-        m_userESRepository.save(userESEntity);
-        return userDto;
+            m_userRepository.save(userEntity);
+            m_userESRepository.save(userESEntity);
+            return userDto;
+        } catch (Exception ex) {
+            throw new CustomException("An error occurred while adding the User", ex);
+        }
     }
 
     @Override
@@ -76,26 +82,47 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional
     public UserDto updateUser(UUID id, UserDto userDto) {
-        UserEntity user = m_userRepository.findUserById(id);
-        UserESEntity userESEntity = m_userESRepository.findUserById(id);
+        try {
+            UserEntity user = m_userRepository.findUserById(id);
+            UserESEntity userESEntity = m_userESRepository.findUserById(id);
 
-        if (user == null) {
-            throw new EntityNotFoundException(String.format("No user found with ID %s", id.toString()));
+            if (user == null) {
+                throw new EntityNotFoundException(String.format("No user found with ID %s", id.toString()));
+            }
+
+            if (userESEntity == null) {
+                throw new EntityNotFoundException(String.format("No elasticsearch user found with ID %s", id.toString()));
+            }
+
+            UpdateUserMapper.updateUserDtoToEntity(user, userDto);
+            UpdateUserMapper.updateUserDtoToESEntity(userESEntity, userDto);
+
+            m_userRepository.save(user);
+            m_userESRepository.save(userESEntity);
+
+            userDto = m_blogMapper.userToDto(user);
+            userDto.setPasswordHash(null);
+            return userDto;
+        } catch (Exception ex) {
+            throw new CustomException("An error occurred while updating the User", ex);
         }
+    }
 
-        if (userESEntity == null) {
-            throw new EntityNotFoundException(String.format("No elasticsearch user found with ID %s", id.toString()));
+    @Override
+    @Transactional
+    public void deleteUserById(UUID id) {
+        try {
+            if (findUserById(id) == null) {
+                throw new EntityNotFoundException(String.format("User not found with ID: %s", id.toString()));
+            }
+
+            m_userRepository.deleteById(id);
+            m_userESRepository.deleteById(id);
+        } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+            throw  new CustomException("Cannot delete User due to foreign key constraint",dataIntegrityViolationException);
+        } catch (Exception ex) {
+            throw new CustomException("An error occurred while deleting the User", ex);
         }
-
-        UpdateUserMapper.updateUserDtoToEntity(user, userDto);
-        UpdateUserMapper.updateUserDtoToESEntity(userESEntity, userDto);
-
-        m_userRepository.save(user);
-        m_userESRepository.save(userESEntity);
-
-        userDto = m_blogMapper.userToDto(user);
-        userDto.setPasswordHash(null);
-        return userDto;
     }
 
 }
