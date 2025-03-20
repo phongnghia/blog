@@ -1,31 +1,12 @@
 package com.resume.blog.dto.tag;
 
-import com.resume.blog.dto.post.PostDto;
-import lombok.Data;
-
-import java.util.List;
-import java.util.UUID;
-
-@Data
-public class TagDto {
-
-    private UUID id;
+public class TagQueryRequest {
 
     private String title;
 
     private String metaTitle;
 
     private String content;
-
-    private List<PostDto> posts;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

@@ -1,31 +1,12 @@
-package com.resume.blog.dto.tag;
+package com.resume.blog.dto.category;
 
-import com.resume.blog.dto.post.PostDto;
-import lombok.Data;
-
-import java.util.List;
-import java.util.UUID;
-
-@Data
-public class TagDto {
-
-    private UUID id;
+public class CategoryQueryRequest {
 
     private String title;
 
     private String metaTitle;
 
     private String content;
-
-    private List<PostDto> posts;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;
@@ -50,5 +31,4 @@ public class TagDto {
     public void setContent(String content) {
         this.content = content;
     }
-
 }

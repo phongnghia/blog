@@ -4,7 +4,6 @@ import com.resume.blog.dto.post.PostDto;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
 public class UserDto extends UserBaseDto{
