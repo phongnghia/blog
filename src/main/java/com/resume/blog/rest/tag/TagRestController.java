@@ -1,4 +1,4 @@
-package com.resume.blog.client.rest.tag;
+package com.resume.blog.rest.tag;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.resume.blog.dto.tag.TagDto;

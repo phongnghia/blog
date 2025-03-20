@@ -1,4 +1,4 @@
-package com.resume.blog.client.rest.category;
+package com.resume.blog.rest.category;
 
 import com.resume.blog.dto.category.CategoryDto;
 import com.resume.blog.dto.category.CategoryQueryRequest;

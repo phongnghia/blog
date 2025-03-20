@@ -1,4 +1,4 @@
-package com.resume.blog.client.rest.user;
+package com.resume.blog.rest.user;
 
 import ch.qos.logback.core.util.StringUtil;
 import com.resume.blog.utils.ApiResponse;
