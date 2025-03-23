@@ -1,12 +1,13 @@
 package com.resume.blog.rest.tag;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.resume.blog.dto.tag.TagDto;
 import com.resume.blog.dto.tag.TagQueryRequest;
 import com.resume.blog.mapper.BlogMapper;
 import com.resume.blog.service.tag.ITagService;
 import com.resume.blog.utils.ApiResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,23 +36,29 @@ public class TagRestController {
     @GetMapping( value = "list" )
     public ResponseEntity<?> listTags() {
         try {
-            return ResponseEntity.ok().body(m_tagService.listTags());
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ApiResponse<>(m_tagService.listTags()));
         } catch (Exception ex) {
-            return ResponseEntity.status(500).body(new ApiResponse<>(null, ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(ex.getMessage()));
         }
     }
 
     @PostMapping( value = "add" )
     public ResponseEntity<?> addTag(@RequestBody TagQueryRequest tagQueryRequest) {
         TagDto tagDto = m_blogMapper.tagQueryRequestToDto(tagQueryRequest);
-
-        if (StringUtil.isNullOrEmpty(tagDto.getTitle())) {
-            return ResponseEntity.status(400).body(String.format("Title cannot be empty. This field is required"));
+        if (StringUtils.isEmpty(tagDto.getTitle())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(String.format("Title cannot be empty. This field is required")));
         }
 
         m_tagService.addTag(tagDto);
 
-        return ResponseEntity.ok().body(new ApiResponse<>(tagDto, String.format("Added successful")));
+        return ResponseEntity
+                .status(HttpStatus.OK).body(new ApiResponse<>(tagDto, String.format("Added successful")));
     }
 
     @GetMapping ( value = "get/{id}" )
@@ -60,11 +67,17 @@ public class TagRestController {
             TagDto tagDto = m_tagService.findTagById(id);
 
             if (tagDto == null) {
-                return ResponseEntity.status(404).body(new ApiResponse<>(null, String.format("No tag found with ID %s", id.toString())));
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<>(String.format("No tag found with ID %s", id.toString())));
             }
-            return ResponseEntity.ok().body(new ApiResponse<>(tagDto, String.format("Success! Tag with ID %s has been found", id.toString())));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ApiResponse<>(tagDto, String.format("Success! Tag with ID %s has been found", id.toString())));
         } catch (Exception ex) {
-            return ResponseEntity.status(500).body(ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(ex.getMessage()));
         }
     }
 
@@ -72,9 +85,13 @@ public class TagRestController {
     public ResponseEntity<?> deleteTagById(@PathVariable UUID id) {
         try {
             m_tagService.deleteTag(id);
-            return ResponseEntity.ok().body(new ApiResponse<>(null, String.format("User deletion successful for the specified ID: %s", id.toString())));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ApiResponse<>(String.format("User deletion successful for the specified ID: %s", id.toString())));
         } catch (Exception ex) {
-            return ResponseEntity.status(500).body(new ApiResponse(null, ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(ex.getMessage()));
         }
     }
 

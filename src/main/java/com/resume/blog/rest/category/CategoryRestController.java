@@ -6,6 +6,7 @@ import com.resume.blog.mapper.BlogMapper;
 import com.resume.blog.service.category.ICategoryService;
 import com.resume.blog.utils.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,9 @@ public class CategoryRestController {
 
     @GetMapping( value = "list" )
     public ResponseEntity<?> listCategories() {
-        return ResponseEntity.ok().body(m_categoryService.listCategories());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ApiResponse<>(m_categoryService.listCategories()));
     }
 
     @PostMapping( value = "add" )
@@ -37,9 +40,13 @@ public class CategoryRestController {
         try {
             CategoryDto categoryDto = m_blogMapper.categoryQueryRequestToDto(categoryQueryRequest);
             m_categoryService.addCategory(categoryDto);
-            return ResponseEntity.ok().body(new ApiResponse<>(categoryDto, String.format("Added successful")));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ApiResponse<>(categoryDto, String.format("Added successful")));
         } catch (Exception ex) {
-            return ResponseEntity.status(500).body(ex.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(ex.getMessage()));
         }
     }
 

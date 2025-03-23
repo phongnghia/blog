@@ -18,4 +18,8 @@ public interface IUserService {
     UserDto updateUser(UUID id, UserDto userDto);
 
     void deleteUserById(UUID id);
+
+    boolean existByUsername(String username);
+
+    boolean existById(UUID id);
 }

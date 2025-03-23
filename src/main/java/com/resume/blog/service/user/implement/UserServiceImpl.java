@@ -125,4 +125,14 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Override
+    public boolean existByUsername(String username) {
+        return m_userRepository.existByUsername(username);
+    }
+
+    @Override
+    public boolean existById(UUID id) {
+        return m_userRepository.existById(id);
+    }
+
 }
