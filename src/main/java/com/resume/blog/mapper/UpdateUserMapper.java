@@ -4,35 +4,36 @@ import com.resume.blog.dto.user.UserDto;
 import com.resume.blog.entity.es.UserESEntity;
 import com.resume.blog.entity.jpa.UserEntity;
 
+import java.util.Optional;
+
 public class UpdateUserMapper{
 
     public static UserEntity updateUserDtoToEntity(UserEntity user, UserDto userDto){
         if (userDto == null) {
             return null;
         }
-
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
-        user.setMobile(userDto.getMobile());
-        user.setProfile(userDto.getProfile());
-        user.setIntro(userDto.getIntro());
+        Optional.ofNullable(userDto.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(userDto.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(userDto.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(userDto.getMobile()).ifPresent(user::setMobile);
+        Optional.ofNullable(userDto.getProfile()).ifPresent(user::setProfile);
+        Optional.ofNullable(userDto.getIntro()).ifPresent(user::setIntro);
 
         return user;
     }
 
-    public static UserESEntity updateUserDtoToESEntity(UserESEntity userESEntity, UserDto userDto){
+    public static UserESEntity updateUserDtoToESEntity(UserESEntity user, UserDto userDto){
         if (userDto == null){
             return null;
         }
 
-        userESEntity.setFirstName(userDto.getFirstName());
-        userESEntity.setLastName(userDto.getLastName());
-        userESEntity.setEmail(userDto.getEmail());
-        userESEntity.setMobile(userDto.getMobile());
-        userESEntity.setProfile(userDto.getProfile());
-        userESEntity.setIntro(userDto.getIntro());
+        Optional.ofNullable(userDto.getFirstName()).ifPresent(user::setFirstName);
+        Optional.ofNullable(userDto.getLastName()).ifPresent(user::setLastName);
+        Optional.ofNullable(userDto.getEmail()).ifPresent(user::setEmail);
+        Optional.ofNullable(userDto.getMobile()).ifPresent(user::setMobile);
+        Optional.ofNullable(userDto.getProfile()).ifPresent(user::setProfile);
+        Optional.ofNullable(userDto.getIntro()).ifPresent(user::setIntro);
 
-        return userESEntity;
+        return user;
     }
 }

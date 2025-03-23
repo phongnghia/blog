@@ -11,6 +11,7 @@ import com.resume.blog.service.user.IUserService;
 import com.resume.blog.utils.CustomException;
 import com.resume.blog.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,9 @@ public class UserServiceImpl implements IUserService {
     private final BlogMapper m_blogMapper;
 
     @Autowired
-    public UserServiceImpl (UserRepository userRepository, UserESRepository userESRepository,
-        BlogMapper blogMapper){
+    public UserServiceImpl (UserRepository userRepository,
+                            UserESRepository userESRepository,
+                            BlogMapper blogMapper){
         this.m_userRepository = userRepository;
         this.m_userESRepository = userESRepository;
         this.m_blogMapper = blogMapper;
@@ -100,7 +102,7 @@ public class UserServiceImpl implements IUserService {
             m_userRepository.save(user);
             m_userESRepository.save(userESEntity);
 
-            userDto = m_blogMapper.userToDto(user);
+            userDto = m_blogMapper.userToDto(m_userRepository.findUserById(id));
             userDto.setPasswordHash(null);
             return userDto;
         } catch (Exception ex) {

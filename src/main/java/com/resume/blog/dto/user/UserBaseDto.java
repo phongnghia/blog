@@ -2,6 +2,7 @@ package com.resume.blog.dto.user;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -22,6 +23,10 @@ public abstract class UserBaseDto {
     protected String profile;
 
     protected String intro;
+
+    protected LocalDateTime createDateAt;
+
+    protected LocalDateTime modifiedDateAt;
 
     public UUID getId() {
         return this.id;

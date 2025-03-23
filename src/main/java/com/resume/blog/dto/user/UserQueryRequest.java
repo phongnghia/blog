@@ -18,8 +18,6 @@ public class UserQueryRequest{
 
     private String intro;
 
-    private String lastModify;
-
     public String getUsername() {
         return username;
     }
@@ -82,14 +80,6 @@ public class UserQueryRequest{
 
     public void setIntro(String intro) {
         this.intro = intro;
-    }
-
-    public String getLastModify() {
-        return lastModify;
-    }
-
-    public void setLastModify(String lastModify) {
-        this.lastModify = lastModify;
     }
 
 }
