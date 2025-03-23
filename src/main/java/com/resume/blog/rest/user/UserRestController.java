@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,7 +41,7 @@ public class UserRestController {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(m_userService.listUser());
+                    .body(new ApiResponse<>(m_userService.listUser()));
         } catch (Exception ex){
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -95,7 +96,7 @@ public class UserRestController {
                 .body(new ApiResponse<>(userDto, message));
     }
 
-    @PostMapping ( value = "update/{id}" )
+    @PutMapping ( value = "update/{id}" )
     public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserQueryRequest userQueryRequest){
         String message;
         try {

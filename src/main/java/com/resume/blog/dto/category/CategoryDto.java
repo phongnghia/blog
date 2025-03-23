@@ -3,6 +3,7 @@ package com.resume.blog.dto.category;
 import com.resume.blog.dto.post.PostDto;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,10 @@ public class CategoryDto {
     private String metaTitle;
 
     private String content;
+
+    private LocalDateTime createDateAt;
+
+    private LocalDateTime modifiedDateAt;
 
     private List<PostDto> posts;
 
