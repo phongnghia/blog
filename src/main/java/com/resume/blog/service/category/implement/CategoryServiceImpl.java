@@ -58,6 +58,7 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(UUID id, CategoryDto categoryDto) {
 
         try {
