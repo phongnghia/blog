@@ -3,6 +3,7 @@ package com.resume.blog.service.category.implement;
 import com.resume.blog.dto.category.CategoryDto;
 import com.resume.blog.entity.jpa.CategoryEntity;
 import com.resume.blog.mapper.BlogMapper;
+import com.resume.blog.mapper.UpdateCategoryMapper;
 import com.resume.blog.repository.jpa.CategoryRepository;
 import com.resume.blog.service.category.ICategoryService;
 import com.resume.blog.utils.CustomException;
@@ -54,6 +55,26 @@ public class CategoryServiceImpl implements ICategoryService {
     public CategoryDto findCategoryById(UUID id) {
         CategoryDto categoryDto = m_blogMapper.categoryEntityToDto(m_categoryRepository.findCategoryById(id));
         return categoryDto;
+    }
+
+    @Override
+    public CategoryDto updateCategory(UUID id, CategoryDto categoryDto) {
+
+        try {
+            CategoryEntity category = m_categoryRepository.findCategoryById(id);
+            if (category == null) {
+                throw new EntityNotFoundException(String.format("No category found with ID %s", id.toString()));
+            }
+
+            UpdateCategoryMapper.updateCategoryDtoToEntity(category, categoryDto);
+
+            m_categoryRepository.save(category);
+
+            return m_blogMapper.categoryEntityToDto(category);
+
+        } catch (Exception ex) {
+            throw new CustomException("An error occurred while updating the Category");
+        }
     }
 
     @Override
