@@ -16,7 +16,7 @@ sudo sysctl -p
 ```code
 docker network create elasticsearch
 
-docker run -d --name elasticsearch
+docker run -d --name elasticsearch \
            --net elastic -p 9200:9200 \
            -it -m 6GB -e "xpack.ml.use_auto_machine_memory_percent=true" \
            -e "xpack.security.enabled=false" \
@@ -42,8 +42,11 @@ docker cp elasticsearch:/usr/share/elasticsearch/config/certs/http_ca.crt .
 
 
 ```code
-docker run -d --name kibana --net elastic \
--p 5601:5601 kibana:8.17.1
+docker run -d \
+           --name kibana \
+           --net elastic \
+           -p 5601:5601 
+           kibana:8.17.1
 ```
 
 ## 🤖 Automatic Deployment (via Shell script)
@@ -92,7 +95,7 @@ echo %JAVA_HOME%
 %JAVA_HOME%\lib\security\cacerts
 
 keytool -import -trustcacerts -keystore "%JAVA_HOME%\lib\security\cacerts" ^
-    -storepass changeit -noprompt -alias elasticsearch -file http_ca.crt
+        -storepass changeit -noprompt -alias elasticsearch -file http_ca.crt
 ```
 
 #### Remove alias (Run as Administration)
@@ -112,8 +115,7 @@ export JAVA_HOME=<Path_to_java>
 echo $JAVA_HOME
 
 sudo keytool -import -trustcacerts -keystore "$JAVA_HOME/lib/security/cacerts" \
-    -storepass changeit -noprompt -alias elasticsearch -file http_ca.crt
-
+             -storepass changeit -noprompt -alias elasticsearch -file http_ca.crt
 ```
 
 #### Remove alias (Run as Administration)
