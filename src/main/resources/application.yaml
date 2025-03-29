@@ -8,7 +8,7 @@ spring:
     name: blog
   elasticsearch:
     uris: https://localhost:9200
-    username: "elastic"
+    username: "@es_username@"
     password: "@es_password@"
     ssl:
       enabled: true
@@ -22,6 +22,10 @@ spring:
     hibernate:
       generate-ddl: true
       ddl-auto: "update"
+  security:
+    user:
+      name: "@sc_username@"
+      password: "@sc_password@"
 #  autoconfigure:
 #    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 springdoc:
