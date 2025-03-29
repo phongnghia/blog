@@ -13,6 +13,8 @@ public interface ICategoryService {
 
     CategoryDto findCategoryById(UUID id);
 
+    CategoryDto updateCategory(UUID id, CategoryDto categoryDto);
+
     void deleteCategory(UUID id);
 
 }

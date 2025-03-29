@@ -52,13 +52,13 @@ public class TagRestController {
         if (StringUtils.isEmpty(tagDto.getTitle())) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>(String.format("Title cannot be empty. This field is required")));
+                    .body(new ApiResponse<>("Title cannot be empty. This field is required"));
         }
 
         m_tagService.addTag(tagDto);
 
         return ResponseEntity
-                .status(HttpStatus.OK).body(new ApiResponse<>(tagDto, String.format("Added successful")));
+                .status(HttpStatus.OK).body(new ApiResponse<>(tagDto, "Added successful"));
     }
 
     @GetMapping ( value = "get/{id}" )
@@ -91,7 +91,7 @@ public class TagRestController {
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse(ex.getMessage()));
+                    .body(new ApiResponse<>(ex.getMessage()));
         }
     }
 

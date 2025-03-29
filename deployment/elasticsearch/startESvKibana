@@ -1,5 +1,9 @@
 #!/bin/bash
 
+LOCALHOST="localhost"
+ES_PORT="9200"
+ES_SECURITY_URI="_security/user"
+
 ES_CONTAINER_NAME="elasticsearch"
 KIBANA_CONTAINER_NAME="kibana"
 
@@ -7,6 +11,15 @@ ES_RESET_PATH="/usr/share/elasticsearch/bin/elasticsearch-reset-password"
 ES_ENROLL_PATH="/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token"
 ES_HTTP_CA_CERT="/usr/share/elasticsearch/config/certs/http_ca.crt"
 ES_USERNAME="elastic"
+[ -z $ADMINUSER_PASSWORD ] && ADMINUSER_PASSWORD="password"
+[ -z $ADMINUSER ] && ADMINUSER="adminuser"
+REQUEST_BODY=$(cat <<EOF
+{
+  "password": "$ADMINUSER_PASSWORD",
+  "roles": ["superuser"]
+}
+EOF
+)
 
 validate_command() {
   [ ${1} -ne 0 ] && print_error "Command not correct" && exit 1
@@ -62,6 +75,7 @@ main(){
   [ ! -z "$CHECK_CONTAINERS" ] && print_warning "Containers is starting. Exit 0" && exit 0
   print_infor "Starting containers"
   docker-compose up -d
+  print_infor "Waiting for the Kibana container to start running..."
   while true ; do
     if [ -z "$(docker logs $KIBANA_CONTAINER_NAME | grep 'Kibana has not been configured')" ]; then
       sleep 3
@@ -73,6 +87,16 @@ main(){
   docker cp "$ES_CONTAINER_NAME":"$ES_HTTP_CA_CERT" .
   print_success "Elasticsearch and Kibana are started"
   print_success "Http ca-certificate: http_ca.crt"
+  print_infor "Waiting for the Elasticsearch container to be up and running..."
+  sleep 10
+  print_infor "Resetting the Elasticsearch password"
+  reset_password
+  print_infor "Generating an enrollment token"
+  enroll
+  print_infor "Creating a new account"
+  curl --cacert http_ca.crt -X POST "https://$LOCALHOST:$ES_PORT/$ES_SECURITY_URI/$ADMINUSER" -u $ES_USERNAME:$NEW_ES_PASSWORD -H "Content-Type: application/json" -d "$REQUEST_BODY" 2>/dev/null && echo
+  [ $? -ne 0 ] && print_error "Error while create $ADMINUSER account" && exit 1
+  print_success "Created a new account $ADMINUSER/$ADMINUSER_PASSWORD"
 }
 
 while [ $# -ne 0 ]; do
