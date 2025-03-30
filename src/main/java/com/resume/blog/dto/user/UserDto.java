@@ -10,6 +10,8 @@ public class UserDto extends UserBaseDto{
 
     private String passwordHash;
 
+    private boolean isActive;
+
     private List<PostDto> posts;
 
     public String getPasswordHash() {

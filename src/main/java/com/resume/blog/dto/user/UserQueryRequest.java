@@ -18,6 +18,8 @@ public class UserQueryRequest{
 
     private String intro;
 
+    private boolean isActive;
+
     public String getUsername() {
         return username;
     }
@@ -80,6 +82,14 @@ public class UserQueryRequest{
 
     public void setIntro(String intro) {
         this.intro = intro;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
 }

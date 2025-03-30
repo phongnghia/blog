@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class UserESDto extends UserBaseDto{
 
-    private String lastModify;
+    private boolean isActive;
 
 }

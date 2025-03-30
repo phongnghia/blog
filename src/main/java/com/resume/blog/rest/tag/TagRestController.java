@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.UUID;
 
 @RestController
-@RequestMapping( value = "/rest/tag" )
+@RequestMapping( value = "/api/tag" )
 public class TagRestController {
 
     private final ITagService m_tagService;

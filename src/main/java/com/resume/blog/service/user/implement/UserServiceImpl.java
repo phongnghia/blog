@@ -11,9 +11,9 @@ import com.resume.blog.service.user.IUserService;
 import com.resume.blog.utils.CustomException;
 import com.resume.blog.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +30,17 @@ public class UserServiceImpl implements IUserService {
 
     private final BlogMapper m_blogMapper;
 
+    private final PasswordEncoder m_passwordEncoder;
+
     @Autowired
     public UserServiceImpl (UserRepository userRepository,
                             UserESRepository userESRepository,
-                            BlogMapper blogMapper){
+                            BlogMapper blogMapper,
+                            PasswordEncoder passwordEncoder){
         this.m_userRepository = userRepository;
         this.m_userESRepository = userESRepository;
         this.m_blogMapper = blogMapper;
+        this.m_passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -52,6 +56,7 @@ public class UserServiceImpl implements IUserService {
             UUID id = Utils.generateRandomId();
 
             userDto.setId(id);
+            userDto.setPasswordHash(m_passwordEncoder.encode(userDto.getPasswordHash()));
             UserEntity userEntity = m_blogMapper.userToEntity(userDto);
             UserESEntity userESEntity = m_blogMapper.userDtoToESEntity(userDto);
 

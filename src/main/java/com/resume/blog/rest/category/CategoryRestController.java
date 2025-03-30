@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.UUID;
 
 @RestController
-@RequestMapping( value = "/rest/category")
+@RequestMapping( value = "/api/category")
 public class CategoryRestController {
 
     private final ICategoryService m_categoryService;
