@@ -11,13 +11,15 @@ import com.resume.blog.service.user.IUserService;
 import com.resume.blog.utils.CustomException;
 import com.resume.blog.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,8 @@ public class UserServiceImpl implements IUserService {
 
     private final BlogMapper m_blogMapper;
 
+//    private final PasswordEncoder m_passwordEncoder;
+
     @Autowired
     public UserServiceImpl (UserRepository userRepository,
                             UserESRepository userESRepository,
@@ -40,50 +44,61 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<UserDto> listUser() {
-        return m_userRepository.findAll().stream().map(m_blogMapper::userToDto)
-                .peek(userDto -> userDto.setPasswordHash(null)).collect(Collectors.toList());
+    public List<Optional<UserDto>> listUser() {
+        return m_userRepository
+                .findAll()
+                .stream()
+                .map( user -> {
+                    UserDto userDto = m_blogMapper.userToDto(user);
+                    if (userDto != null) {
+                        userDto.setPasswordHash(null); // Mask password
+                    }
+                    return Optional.ofNullable(userDto);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public UserDto addUser(UserDto userDto) {
+    public Optional<UserDto> addUser(UserDto userDto) {
         try {
             UUID id = Utils.generateRandomId();
 
             userDto.setId(id);
+            userDto.setPasswordHash(Base64.getEncoder().encodeToString(userDto.getPasswordHash().getBytes()));
             UserEntity userEntity = m_blogMapper.userToEntity(userDto);
             UserESEntity userESEntity = m_blogMapper.userDtoToESEntity(userDto);
 
             m_userRepository.save(userEntity);
             m_userESRepository.save(userESEntity);
-            return userDto;
+            userDto.setPasswordHash(null);
+            return Optional.of(userDto);
         } catch (Exception ex) {
             throw new CustomException("An error occurred while adding the User", ex);
         }
     }
 
     @Override
-    public UserDto findUserByUsername(String username) {
+    public Optional<UserDto> findUserByUsername(String username) {
         UserDto userDto = m_blogMapper.userToDto(m_userRepository.findUserByUsername(username));
         if (userDto != null) {
             userDto.setPasswordHash(null);
         }
-        return userDto;
+        return Optional.ofNullable(userDto);
     }
 
     @Override
-    public UserDto findUserById(UUID id) {
+    public Optional<UserDto> findUserById(UUID id) {
         UserDto userDto = m_blogMapper.userToDto(m_userRepository.findUserById(id));
         if (userDto != null) {
             userDto.setPasswordHash(null);
         }
-        return userDto;
+        return Optional.ofNullable(userDto);
     }
 
     @Override
     @Transactional
-    public UserDto updateUser(UUID id, UserDto userDto) {
+    public Optional<UserDto> updateUser(UUID id, UserDto userDto) {
         try {
             UserEntity user = m_userRepository.findUserById(id);
             UserESEntity userESEntity = m_userESRepository.findUserById(id);
@@ -104,7 +119,7 @@ public class UserServiceImpl implements IUserService {
 
             userDto = m_blogMapper.userToDto(m_userRepository.findUserById(id));
             userDto.setPasswordHash(null);
-            return userDto;
+            return Optional.of(userDto);
         } catch (Exception ex) {
             throw new CustomException("An error occurred while updating the User", ex);
         }
@@ -114,7 +129,7 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     public void deleteUserById(UUID id) {
         try {
-            if (findUserById(id) == null) {
+            if (findUserById(id).isEmpty()) {
                 throw new EntityNotFoundException(String.format("User not found with ID: %s", id.toString()));
             }
 

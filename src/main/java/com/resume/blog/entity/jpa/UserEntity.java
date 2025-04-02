@@ -31,6 +31,9 @@ public class UserEntity extends BaseUserEntity {
     @Column ( nullable = false )
     private String username;
 
+    @Column
+    private boolean isActive;
+
     @OneToMany( mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PostEntity> posts;
 

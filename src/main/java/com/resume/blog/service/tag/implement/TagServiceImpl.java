@@ -14,7 +14,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,36 +35,39 @@ public class TagServiceImpl implements ITagService {
 
     @Override
     @Transactional
-    public TagDto addTag(TagDto tagDto) {
+    public void addTag(TagDto tagDto) {
         TagEntity tagEntity = m_blogMapper.tagDtoToEntity(tagDto);
         try {
             UUID id = Utils.generateRandomId();
             tagEntity.setId(id);
             tagDto.setId(id);
             m_tagRepository.save(tagEntity);
-            return tagDto;
         } catch (Exception ex) {
             throw new CustomException("An error occurred while adding the Category");
         }
     }
 
     @Override
-    public TagDto findTagById(UUID id) {
+    public Optional<TagDto> findTagById(UUID id) {
         TagDto tagDto = m_blogMapper.tagEntityToDto(m_tagRepository.findTagById(id));
         if (tagDto == null){
             throw new EntityNotFoundException(String.format("No tag found with ID %s", id.toString()));
         }
-        return tagDto;
+        return Optional.of(tagDto);
     }
 
     @Override
-    public List<TagDto> listTags() {
-        return m_tagRepository.findAll().stream().map(m_blogMapper::tagEntityToDto).collect(Collectors.toList());
+    public List<Optional<TagDto>> listTags() {
+        return m_tagRepository
+                .findAll()
+                .stream()
+                .map(tag -> Optional.ofNullable(m_blogMapper.tagEntityToDto(tag)))
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public TagDto updateTag(UUID id, TagDto tagDto) {
+    public Optional<TagDto> updateTag(UUID id, TagDto tagDto) {
         TagEntity tagEntity = m_tagRepository.findTagById(id);
         if (tagEntity == null){
             throw new EntityNotFoundException(String.format("No tag found with ID %s", id.toString()));
@@ -71,14 +76,14 @@ public class TagServiceImpl implements ITagService {
         m_tagRepository.save(tagEntity);
 
         tagDto = m_blogMapper.tagEntityToDto(tagEntity);
-        return tagDto;
+        return Optional.ofNullable(tagDto);
     }
 
     @Override
     @Transactional
     public void deleteTag(UUID id) {
         try {
-            if (findTagById(id) == null) {
+            if (findTagById(id).isEmpty()) {
                 throw new CustomException(String.format("Tag not found with ID %s", id.toString()));
             }
             m_tagRepository.deleteById(id);

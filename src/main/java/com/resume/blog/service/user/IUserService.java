@@ -3,19 +3,20 @@ package com.resume.blog.service.user;
 import com.resume.blog.dto.user.UserDto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface IUserService {
 
-    List<UserDto> listUser();
+    List<Optional<UserDto>> listUser();
 
-    UserDto addUser(UserDto userDto);
+    Optional<UserDto> addUser(UserDto userDto);
 
-    UserDto findUserByUsername(String username);
+    Optional<UserDto> findUserByUsername(String username);
 
-    UserDto findUserById(UUID id);
+    Optional<UserDto> findUserById(UUID id);
 
-    UserDto updateUser(UUID id, UserDto userDto);
+    Optional<UserDto> updateUser(UUID id, UserDto userDto);
 
     void deleteUserById(UUID id);
 

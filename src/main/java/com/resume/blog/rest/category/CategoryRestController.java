@@ -18,10 +18,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping( value = "/rest/category")
+@RequestMapping( value = "/api/category")
 public class CategoryRestController {
 
     private final ICategoryService m_categoryService;
@@ -38,7 +39,12 @@ public class CategoryRestController {
     public ResponseEntity<?> listCategories() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ApiResponse<>(m_categoryService.listCategories()));
+                .body(ApiResponse
+                        .builder()
+                        .m_message("List of category")
+                        .m_data(m_categoryService.listCategories())
+                        .build()
+                );
     }
 
     @PostMapping( value = "add" )
@@ -48,26 +54,42 @@ public class CategoryRestController {
             m_categoryService.addCategory(categoryDto);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponse<>(categoryDto, "Added successful"));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message("Added successful")
+                            .m_data(categoryDto)
+                            .build()
+                    );
         } catch (CustomException ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ex.getMessage()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 
     @PutMapping( value = "update/{id}" )
     public ResponseEntity<?> updateCategory(@PathVariable UUID id, @RequestBody CategoryQueryRequest categoryQueryRequest)  {
         try {
-            CategoryDto categoryDto = m_blogMapper.categoryQueryRequestToDto(categoryQueryRequest);
-            categoryDto = m_categoryService.updateCategory(id, categoryDto);
+            Optional<CategoryDto> categoryDto = m_categoryService.updateCategory(id, m_blogMapper.categoryQueryRequestToDto(categoryQueryRequest));
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponse<>(categoryDto));
+                    .body(ApiResponse
+                            .builder()
+                            .m_data(categoryDto)
+                            .build()
+                    );
         } catch (CustomException ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ex.getMessage());
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 
@@ -77,11 +99,19 @@ public class CategoryRestController {
             m_categoryService.deleteCategory(id);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponse<>(String.format("deletion successful for the specified ID: %s", id.toString())));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(String.format("deletion successful for the specified ID: %s", id.toString()))
+                            .build()
+                    );
         } catch (CustomException ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ex.getMessage()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 

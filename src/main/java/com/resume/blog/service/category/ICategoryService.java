@@ -3,17 +3,18 @@ package com.resume.blog.service.category;
 import com.resume.blog.dto.category.CategoryDto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ICategoryService {
 
-    List<CategoryDto> listCategories();
+    List<Optional<CategoryDto>> listCategories();
 
-    CategoryDto addCategory(CategoryDto categoryDto);
+    void addCategory(CategoryDto categoryDto);
 
-    CategoryDto findCategoryById(UUID id);
+    Optional<CategoryDto> findCategoryById(UUID id);
 
-    CategoryDto updateCategory(UUID id, CategoryDto categoryDto);
+    Optional<CategoryDto> updateCategory(UUID id, CategoryDto categoryDto);
 
     void deleteCategory(UUID id);
 

@@ -8,5 +8,5 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Data
 @Document(indexName = "user")
 public class UserESEntity extends BaseUserEntity {
-
+    private boolean isActive;
 }
