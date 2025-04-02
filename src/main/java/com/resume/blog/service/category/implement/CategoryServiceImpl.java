@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,34 +33,36 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public List<CategoryDto> listCategories() {
-        return m_categoryRepository.findAll().stream().map(m_blogMapper::categoryEntityToDto).collect(Collectors.toList());
+    public List<Optional<CategoryDto>> listCategories() {
+        return m_categoryRepository
+                .findAll()
+                .stream()
+                .map(category -> Optional.ofNullable(m_blogMapper.categoryEntityToDto(category)))
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public CategoryDto addCategory(CategoryDto categoryDto) {
+    public void addCategory(CategoryDto categoryDto) {
         CategoryEntity categoryEntity = m_blogMapper.categoryDtoToEntity(categoryDto);
         try {
             UUID id = Utils.generateRandomId();
             categoryEntity.setId(id);
             categoryDto.setId(id);
             m_categoryRepository.save(categoryEntity);
-            return categoryDto;
         } catch (Exception ex) {
             throw new CustomException("An error occurred while adding the Category");
         }
     }
 
     @Override
-    public CategoryDto findCategoryById(UUID id) {
-        CategoryDto categoryDto = m_blogMapper.categoryEntityToDto(m_categoryRepository.findCategoryById(id));
-        return categoryDto;
+    public Optional<CategoryDto> findCategoryById(UUID id) {
+        return Optional.ofNullable(m_blogMapper.categoryEntityToDto(m_categoryRepository.findCategoryById(id)));
     }
 
     @Override
     @Transactional
-    public CategoryDto updateCategory(UUID id, CategoryDto categoryDto) {
+    public Optional<CategoryDto> updateCategory(UUID id, CategoryDto categoryDto) {
 
         try {
             CategoryEntity category = m_categoryRepository.findCategoryById(id);
@@ -71,7 +74,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
             m_categoryRepository.save(category);
 
-            return m_blogMapper.categoryEntityToDto(category);
+            return Optional.ofNullable(m_blogMapper.categoryEntityToDto(category));
 
         } catch (Exception ex) {
             throw new CustomException("An error occurred while updating the Category");

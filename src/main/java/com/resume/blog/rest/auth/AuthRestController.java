@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping( value = "/api/auth" )
 public class AuthRestController {
@@ -38,27 +40,44 @@ public class AuthRestController {
                 message = "Username or password cannot be empty. These fields are required";
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
-                        .body(new ApiResponse<>(message));
+                        .body(ApiResponse
+                                .builder()
+                                .m_message(message)
+                                .build()
+                        );
             }
 
-            if (m_userService.findUserByUsername(userQueryRequest.getUsername()) == null) {
+            if (m_userService.findUserByUsername(userQueryRequest.getUsername()).isEmpty()) {
                 userQueryRequest.setActive(true);
 
-                UserDto userDto = m_userService.addUser(m_blogMapper.userRequestQueryToDto(userQueryRequest));
+                Optional<UserDto> userDto = m_userService.addUser(m_blogMapper.userRequestQueryToDto(userQueryRequest));
                 message = "User account has been successfully created";
                 return ResponseEntity
                         .status(HttpStatus.OK)
-                        .body(new ApiResponse<>(userDto, message));
+                        .body(ApiResponse
+                                .builder()
+                                .m_message(message)
+                                .m_data(userDto)
+                                .build()
+                        );
             } else {
                 message = String.format("The username %s already exists", userQueryRequest.getUsername());
                 return ResponseEntity
                         .status(HttpStatus.CONFLICT)
-                        .body(new ApiResponse<>(message));
+                        .body(ApiResponse
+                                .builder()
+                                .m_message(message)
+                                .build()
+                        );
             }
         } catch (CustomException ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ex.getMessage()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 

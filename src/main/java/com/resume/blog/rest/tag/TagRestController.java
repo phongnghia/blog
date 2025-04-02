@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -38,11 +39,20 @@ public class TagRestController {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponse<>(m_tagService.listTags()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message("List of tag")
+                            .m_data(m_tagService.listTags())
+                            .build()
+                    );
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ex.getMessage()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 
@@ -52,32 +62,54 @@ public class TagRestController {
         if (StringUtils.isEmpty(tagDto.getTitle())) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>("Title cannot be empty. This field is required"));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message("Title cannot be empty. This field is required")
+                            .build()
+                    );
         }
 
         m_tagService.addTag(tagDto);
 
         return ResponseEntity
-                .status(HttpStatus.OK).body(new ApiResponse<>(tagDto, "Added successful"));
+                .status(HttpStatus.OK).body(ApiResponse
+                        .builder()
+                        .m_message("Added successful")
+                        .m_data(tagDto)
+                        .build()
+                );
     }
 
     @GetMapping ( value = "get/{id}" )
     public ResponseEntity<?> getTagById(@PathVariable UUID id) {
         try {
-            TagDto tagDto = m_tagService.findTagById(id);
+            Optional<TagDto> tagDto = m_tagService.findTagById(id);
 
-            if (tagDto == null) {
+            if (tagDto.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
-                        .body(new ApiResponse<>(String.format("No tag found with ID %s", id.toString())));
+                        .body(ApiResponse
+                                .builder()
+                                .m_message(String.format("No tag found with ID %s", id.toString()))
+                                .build()
+                        );
             }
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponse<>(tagDto, String.format("Success! Tag with ID %s has been found", id.toString())));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(String.format("Success! Tag with ID %s has been found", id.toString()))
+                            .m_data(tagDto)
+                            .build()
+                    );
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ex.getMessage()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 
@@ -87,11 +119,19 @@ public class TagRestController {
             m_tagService.deleteTag(id);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ApiResponse<>(String.format("User deletion successful for the specified ID: %s", id.toString())));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(String.format("User deletion successful for the specified ID: %s", id.toString()))
+                            .build()
+                    );
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ex.getMessage()));
+                    .body(ApiResponse
+                            .builder()
+                            .m_message(ex.getMessage())
+                            .build()
+                    );
         }
     }
 
