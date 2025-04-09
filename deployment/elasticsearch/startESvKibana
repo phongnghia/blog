@@ -88,7 +88,7 @@ main(){
   print_success "Elasticsearch and Kibana are started"
   print_success "Http ca-certificate: http_ca.crt"
   print_infor "Waiting for the Elasticsearch container to be up and running..."
-  sleep 10
+  sleep 30
   print_infor "Resetting the Elasticsearch password"
   reset_password
   print_infor "Generating an enrollment token"

@@ -7,7 +7,9 @@ services:
     ports:
       - "9200:9200"
     environment:
+      discovery.type: single-node
       xpack.ml.use_auto_machine_memory_percent: true
+      xpack.security.enrollment.enabled: true
     deploy:
       resources:
         limits:
@@ -17,5 +19,16 @@ services:
     image: kibana:8.17.1
     ports:
       - "5601:5601"
-    depends_on:
-      - elasticsearch
+#    environment:
+#      ELASTICSEARCH_HOSTS: "https://elasticsearch:9200"
+#    entrypoint: [ "/bin/bash", "-c", "/shared/entrypoint.sh" ]
+#    volumes:
+#      - kibana-volume:/shared
+#
+#volumes:
+#  kibana-volume:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      o: bind
+#      device: LOCALDIR

@@ -32,15 +32,17 @@ public class UserServiceImpl implements IUserService {
 
     private final BlogMapper m_blogMapper;
 
-//    private final PasswordEncoder m_passwordEncoder;
+    private final PasswordEncoder m_passwordEncoder;
 
     @Autowired
     public UserServiceImpl (UserRepository userRepository,
                             UserESRepository userESRepository,
-                            BlogMapper blogMapper){
+                            BlogMapper blogMapper,
+                            PasswordEncoder passwordEncoder){
         this.m_userRepository = userRepository;
         this.m_userESRepository = userESRepository;
         this.m_blogMapper = blogMapper;
+        this.m_passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -65,7 +67,7 @@ public class UserServiceImpl implements IUserService {
             UUID id = Utils.generateRandomId();
 
             userDto.setId(id);
-            userDto.setPasswordHash(Base64.getEncoder().encodeToString(userDto.getPasswordHash().getBytes()));
+            userDto.setPasswordHash(m_passwordEncoder.encode(userDto.getPasswordHash()));
             UserEntity userEntity = m_blogMapper.userToEntity(userDto);
             UserESEntity userESEntity = m_blogMapper.userDtoToESEntity(userDto);
 
